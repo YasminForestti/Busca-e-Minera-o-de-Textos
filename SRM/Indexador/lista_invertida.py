@@ -1,6 +1,11 @@
 import os
 import xml.etree.ElementTree as ET
 import string
+import os
+import re
+import csv
+import logging
+import xml.etree.ElementTree as ET
 
 def parse_xml_file(xml_file):
     tree = ET.parse(xml_file)
@@ -24,17 +29,18 @@ def create_inverted_index(documents):
     for doc_id, doc_text in documents:
         for word in doc_text.split():
             if word not in inverted_index:
-                inverted_index[word] = [doc_id]
+                inverted_index[word] = [int(doc_id)]
             else:
-                inverted_index[word].append(doc_id)
+                inverted_index[word].append(int(doc_id))
 
     return inverted_index
 
 def write_inverted_index_to_file(inverted_index, output_file):
-    with open(output_file, "w") as f:
+    with open(output_file, "w", newline='') as f:
+        writer = csv.writer(f, delimiter=";")
+        writer.writerow(["Word", "Documents"])
         for word, docs in inverted_index.items():
-            line = word + " ; " + str(docs) + "\n"
-            f.write(line)
+            writer.writerow([word, docs])
 
 def main():
     GLI_path  = 'SRM/Indexador/GLI.cfg'
