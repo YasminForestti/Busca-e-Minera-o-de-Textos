@@ -5,15 +5,27 @@ import ast
 import math
 
 min_length = 2
-BUSCA_path  = 'SRM/Buscador/BUSCA.cfg'
+BUSCA_path  = 'SRM/SRC/Buscador/BUSCA.cfg'
 with open(BUSCA_path , 'r') as f:
     for line in f:
+        if line.startswith("STEMMER"):
+            stem = True
+            continue
+        elif line.startswith("NOSTEMMER"):
+            stem = False
+            continue
+                
         if line.startswith('MODELO='):
             modelo = line.split('=')[1].strip()
         elif line.startswith('CONSULTAS='):
             consultas = line.split('=')[1].strip()
         elif line.startswith('RESULTADOS='):
-            resultado = line.split('=')[1].strip()
+            Path_resultado = line.split('=')[1].strip()
+            oldname, extension = Path_resultado.split('.')
+            if stem:
+                resultado = oldname + "-stemmer." + extension
+            else:
+                resultado = oldname + "-nostemmer." + extension
 
 matrix_dict = {}
 with open(modelo) as model_file:

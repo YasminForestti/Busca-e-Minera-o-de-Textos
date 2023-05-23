@@ -2,10 +2,18 @@ import xml.etree.ElementTree as ET
 import csv
 
 # Lê o arquivo de configuração
-PC_path  = 'SRM/Processador de consultas/PC.cfg'
+PC_path  = 'SRM/SRC/Processador de consultas/PC.cfg'
 with open(PC_path , 'r') as f:
     for line in f:
-        if line.startswith('LEIA='):
+        if line.startswith("STEMMER"):
+            from nltk.stem import PorterStemmer
+            ps = PorterStemmer()
+            stem = True
+            continue
+        elif line.startswith("STEMMER"):
+            stem = False
+            continue 
+        elif line.startswith('LEIA='):
             xml_filename = line.split('=')[1].strip()
         elif line.startswith('CONSULTAS='):
             consultas_filename = line.split('=')[1].strip()
@@ -24,6 +32,8 @@ resultados_esperados = []
 for query in root.iter('QUERY'):
     query_number = query.find('QueryNumber').text
     query_text = query.find('QueryText').text.upper().replace(';', '')
+    if stem: 
+        query_text = ' '.join(ps.stem(word) for word in query_text.split())
     consultas.append([query_number, query_text])
 
     for item in query.findall('Records/Item'):
